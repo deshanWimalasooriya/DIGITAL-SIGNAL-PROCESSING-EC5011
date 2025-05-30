@@ -1,0 +1,32 @@
+define CHIP_6713
+
+#include "dsk6713.h"
+#include "dsk6713_aic23.h"
+#include "dsk6713_dip.h"
+#include "dsk6713_led.h"
+
+Uint32 Leftchannel,Rightchannel,data,x,y,leftshifted_data ;
+
+int main(void)
+{
+    DSK6713_AIC23_CodecHandle hCodec;
+    DSK6713_AIC23_Config config=DSK6713_AIC23_DEFAULTCONFIG ;
+
+    DSK6713_init();
+    DSK6713_DIP_init();
+    DSK6713_LED_init();
+    hCodec= DSK6713_AIC23_openCodec(0, &config);
+    DSK6713_AIC23_setFreq(hCodec, DSK6713_AIC23_FREQ_8KHZ);
+
+    while(1){
+        if(DSK6713_DIP_get(0)==0){
+            while(!DSK6713_AIC23_read(hCodec, &data));
+            while(!DSK6713_AIC23_write(hCodec, data));
+            DSK6713_LED_on(0);
+        }
+        else{
+            DSK6713_LED_off(0);
+        }
+    }
+	return 0;
+
